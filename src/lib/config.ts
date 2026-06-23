@@ -1,7 +1,6 @@
-// 계좌이체 안내에 보여줄 입금 계좌 정보.
-// TODO: 실제 운영 시 아래 값을 퀸스앤틱의 진짜 계좌로 바꿔주세요.
+// 계좌이체 안내에 보여줄 입금 계좌 정보. (퀸스앤틱 실제 입금 계좌)
 export const BANK_INFO = {
-  bankName: "국민은행",
-  accountNumber: "123456-78-901234",
-  accountHolder: "퀸스앤틱",
+  bankName: "하나은행",
+  accountNumber: "089-2201-327-7",
+  accountHolder: "김영철퀸",
 };
