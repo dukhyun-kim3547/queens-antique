@@ -1,134 +1,125 @@
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
-import type { Item } from "@/lib/types";
-import ItemCard from "@/components/ItemCard";
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{ category?: string; era?: string; sort?: string }>;
-}) {
-  const { category, era, sort } = await searchParams;
+const PRINCIPLES = [
+  {
+    no: "01",
+    title: "선판매 후이동",
+    body: "작품은 판매자 댁에 그대로 둡니다. 사진과 정보만 사이트에 올리고, 판매되는 순간에만 단 한 번 배송됩니다. 불필요한 이동도, 선불 배송비도 없습니다.",
+  },
+  {
+    no: "02",
+    title: "두 등급의 검수",
+    body: "모든 작품은 원격 감정 또는 직접 검수를 거칩니다. 검수 방식을 작품마다 배지로 투명하게 표시하여, 안심하고 구매하실 수 있습니다.",
+  },
+  {
+    no: "03",
+    title: "단계 인하 가격",
+    body: "큐레이터가 정한 시작가에서, 일정 주기마다 가격이 한 단계씩 내려가 최저가에서 멈춥니다. 지금 살지, 조금 더 기다릴지는 당신의 선택입니다.",
+  },
+];
 
-  // 판매중인 작품을 모두 불러온다.
-  const { data, error } = await supabase
-    .from("items")
-    .select("*")
-    .eq("status", "selling")
-    .order("created_at", { ascending: false });
-
-  const allItems = (data ?? []) as Item[];
-
-  // 필터 선택지(카테고리·시대)는 실제 작품에서 뽑아낸다.
-  const categories = [
-    ...new Set(allItems.map((i) => i.category).filter(Boolean)),
-  ] as string[];
-  const eras = [...new Set(allItems.map((i) => i.era).filter(Boolean))] as string[];
-
-  // 선택한 필터를 적용한다.
-  let items = allItems;
-  if (category) items = items.filter((i) => i.category === category);
-  if (era) items = items.filter((i) => i.era === era);
-  if (sort === "price_asc")
-    items = [...items].sort((a, b) => a.current_price - b.current_price);
-  if (sort === "price_desc")
-    items = [...items].sort((a, b) => b.current_price - a.current_price);
-
+export default function Home() {
   return (
-    <main className="mx-auto max-w-6xl px-6 py-16">
-      {/* 머리말 */}
-      <header className="mb-12 text-center">
-        <p className="mb-4 text-xs tracking-[0.3em] text-stone-400">
+    <main>
+      {/* 히어로 */}
+      <section className="mx-auto flex min-h-[78vh] max-w-3xl flex-col items-center justify-center px-6 text-center">
+        <p className="text-xs tracking-[0.4em] text-brass">
           EST. 2001 · EUROPEAN ANTIQUES
         </p>
-        <h1 className="font-serif text-4xl font-medium tracking-tight text-stone-900 sm:text-5xl">
+        <h1 className="mt-8 font-serif text-6xl font-medium tracking-tight text-stone-900 sm:text-7xl">
           퀸스앤틱
         </h1>
-        <p className="mt-4 text-sm leading-7 text-stone-500">
-          25년의 안목으로 큐레이션하는 유럽 앤틱 위탁 마켓플레이스.
+        <p className="mt-4 text-sm tracking-[0.3em] text-stone-400">
+          QUEENS ANTIQUE
         </p>
-        <Link
-          href="/consign"
-          className="mt-6 inline-block rounded-full border border-stone-900 px-6 py-2 text-sm text-stone-900 transition hover:bg-stone-900 hover:text-white"
-        >
-          내 앤틱 위탁하기 →
-        </Link>
-      </header>
 
-      {/* 필터 (선택 후 '적용'을 누르면 목록이 걸러집니다) */}
-      <form
-        method="get"
-        className="mb-10 flex flex-wrap items-end justify-center gap-4 border-y border-stone-200 py-5"
-      >
-        <label className="flex flex-col text-xs text-stone-500">
-          카테고리
-          <select
-            name="category"
-            defaultValue={category ?? ""}
-            className="mt-1 rounded border border-stone-300 px-3 py-2 text-sm text-stone-800"
-          >
-            <option value="">전체</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="mx-auto mt-10 h-px w-16 bg-brass/40" />
 
-        <label className="flex flex-col text-xs text-stone-500">
-          시대
-          <select
-            name="era"
-            defaultValue={era ?? ""}
-            className="mt-1 rounded border border-stone-300 px-3 py-2 text-sm text-stone-800"
-          >
-            <option value="">전체</option>
-            {eras.map((e) => (
-              <option key={e} value={e}>
-                {e}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="flex flex-col text-xs text-stone-500">
-          정렬
-          <select
-            name="sort"
-            defaultValue={sort ?? ""}
-            className="mt-1 rounded border border-stone-300 px-3 py-2 text-sm text-stone-800"
-          >
-            <option value="">최신순</option>
-            <option value="price_asc">가격 낮은순</option>
-            <option value="price_desc">가격 높은순</option>
-          </select>
-        </label>
-
-        <button
-          type="submit"
-          className="rounded bg-stone-900 px-5 py-2 text-sm text-white transition hover:bg-stone-700"
-        >
-          적용
-        </button>
-      </form>
-
-      {/* 작품 목록 */}
-      {error ? (
-        <p className="text-center text-sm text-red-600">
-          작품을 불러오지 못했습니다: {error.message}
+        <p className="mt-10 max-w-xl text-base leading-8 text-stone-600">
+          25년간 유럽의 시간을 큐레이션해 온 안목으로,
+          <br className="hidden sm:block" />
+          당신의 앤틱을 다음 주인에게 잇습니다.
+          <br />
+          맡기는 사람도, 들이는 사람도 편안한 상시 위탁 마켓플레이스.
         </p>
-      ) : items.length === 0 ? (
-        <p className="py-20 text-center text-sm text-stone-400">
-          조건에 맞는 작품이 없습니다.
-        </p>
-      ) : (
-        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
-          {items.map((item) => (
-            <ItemCard key={item.id} item={item} />
-          ))}
+
+        <div className="mt-12 flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/shop"
+            className="rounded-full bg-stone-900 px-8 py-3 text-sm text-white transition hover:bg-stone-700"
+          >
+            컬렉션 둘러보기
+          </Link>
+          <Link
+            href="/consign"
+            className="rounded-full border border-stone-400 px-8 py-3 text-sm text-stone-800 transition hover:border-stone-900"
+          >
+            내 앤틱 위탁하기
+          </Link>
         </div>
-      )}
+      </section>
+
+      {/* 운영 방식 3원칙 */}
+      <section className="border-t border-stone-200 bg-white/40">
+        <div className="mx-auto max-w-6xl px-6 py-20">
+          <p className="text-center text-xs tracking-[0.3em] text-brass">
+            HOW IT WORKS
+          </p>
+          <h2 className="mt-4 text-center font-serif text-3xl text-stone-900">
+            퀸스앤틱의 운영 방식
+          </h2>
+
+          <div className="mt-14 grid gap-12 md:grid-cols-3">
+            {PRINCIPLES.map((p) => (
+              <div key={p.no}>
+                <p className="font-serif text-2xl text-brass">{p.no}</p>
+                <h3 className="mt-3 font-serif text-xl text-stone-900">
+                  {p.title}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-stone-600">
+                  {p.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 브랜드 소개 */}
+      <section className="border-t border-stone-200">
+        <div className="mx-auto max-w-3xl px-6 py-20 text-center">
+          <p className="text-xs tracking-[0.3em] text-brass">OUR STORY</p>
+          <p className="mt-8 font-serif text-2xl leading-relaxed text-stone-800">
+            “좋은 물건은 시간을 견디고,
+            <br />
+            좋은 안목은 그 가치를 알아봅니다.”
+          </p>
+          <p className="mt-8 text-sm leading-8 text-stone-600">
+            퀸스앤틱은 25년 동안 유럽의 앤틱 가구와 소품을 큐레이션해 왔습니다.
+            이제 그 안목으로, 일반 가정의 앤틱을 감정하고 새로운 주인에게
+            이어드립니다. 우리는 창고에 쌓아두지 않습니다. 오직 합당한 가치를
+            지닌 작품만을, 정직한 컨디션 리포트와 함께 소개합니다.
+          </p>
+        </div>
+      </section>
+
+      {/* 마무리 CTA */}
+      <section className="border-t border-stone-200 bg-stone-900">
+        <div className="mx-auto max-w-3xl px-6 py-20 text-center">
+          <h2 className="font-serif text-3xl text-white">
+            지금의 컬렉션을 만나보세요
+          </h2>
+          <p className="mt-4 text-sm leading-7 text-stone-300">
+            오늘 둘러보지 않으면, 내일은 다른 가격일지도 모릅니다.
+          </p>
+          <Link
+            href="/shop"
+            className="mt-10 inline-block rounded-full bg-white px-8 py-3 text-sm text-stone-900 transition hover:bg-stone-200"
+          >
+            컬렉션 둘러보기
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }

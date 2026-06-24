@@ -46,10 +46,10 @@ export default async function ItemDetail({
     <main className="mx-auto max-w-5xl px-6 py-12">
       {/* 뒤로 가기 */}
       <Link
-        href="/"
+        href="/shop"
         className="text-sm text-stone-500 transition hover:text-stone-900"
       >
-        ← 작품 목록으로
+        ← 컬렉션으로
       </Link>
 
       <div className="mt-8 grid gap-10 md:grid-cols-2">

@@ -91,10 +91,10 @@ export default function OrderForm({ itemId, itemTitle, price }: Props) {
         </p>
 
         <Link
-          href="/"
+          href="/shop"
           className="mt-6 inline-block rounded bg-stone-900 px-6 py-3 text-sm text-white transition hover:bg-stone-700"
         >
-          작품 둘러보기
+          컬렉션 둘러보기
         </Link>
       </div>
     );

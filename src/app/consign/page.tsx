@@ -102,10 +102,10 @@ export default function ConsignPage() {
           입력하신 연락처(<b>{sellerPhone}</b>)로 연락드리겠습니다.
         </p>
         <Link
-          href="/"
+          href="/shop"
           className="mt-10 inline-block rounded bg-stone-900 px-6 py-3 text-sm text-white transition hover:bg-stone-700"
         >
-          작품 둘러보기
+          컬렉션 둘러보기
         </Link>
       </main>
     );
@@ -119,10 +119,10 @@ export default function ConsignPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
       <Link
-        href="/"
+        href="/shop"
         className="text-sm text-stone-500 transition hover:text-stone-900"
       >
-        ← 작품 목록으로
+        ← 컬렉션으로
       </Link>
 
       <header className="mt-6 mb-10">
